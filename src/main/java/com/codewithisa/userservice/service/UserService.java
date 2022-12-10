@@ -9,5 +9,7 @@ public interface UserService {
     Users saveUser(Users user);
 
     Users getUserByUserId(Long userId);
+
+    Users updateUser(Users users, Long userId);
 }
 

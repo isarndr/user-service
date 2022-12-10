@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Slf4j
 @Service
@@ -23,6 +25,19 @@ public class UserServiceImpl implements UserService{
     public Users getUserByUserId(Long userId) {
         log.info("Inside getUserByUserId of UserServiceImpl");
         return userRepository.findUserByUserId(userId);
+    }
+
+    @Override
+    public Users updateUser(Users user, Long userId) {
+        log.info("Inside updateUser of UserServiceImpl");
+        Users existingUser = userRepository.findById(userId).get();
+        existingUser.setUsername(user.getUsername());
+        existingUser.setEmailAddress(user.getEmailAddress());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setUserId(userId);
+        userRepository.save(existingUser);
+        log.info("user successfully updated");
+        return existingUser;
     }
 }
 

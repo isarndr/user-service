@@ -2,7 +2,6 @@ package com.codewithisa.userservice.controller;
 
 import com.codewithisa.userservice.entity.Users;
 import com.codewithisa.userservice.entity.request.SignupRequest;
-import com.codewithisa.userservice.entity.response.MessageResponse;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.Set;
 
 @Slf4j
 @RestController
@@ -49,6 +46,16 @@ public class UserController {
                 signupRequest.getPassword());
 
         return new ResponseEntity<>(userService.updateUser(users, userId), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "untuk menghapus user dari database"
+    )
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@Schema(example = "1")  @PathVariable("userId") Long userId){
+        log.info("Inside deleteUser of UserController");
+        userService.deleteUserByUserId(userId);
+        return new ResponseEntity<>("user successfully deleted",HttpStatus.OK);
     }
 }
 

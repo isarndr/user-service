@@ -39,5 +39,11 @@ public class UserServiceImpl implements UserService{
         log.info("user successfully updated");
         return existingUser;
     }
+
+    @Override
+    public void deleteUserByUserId(Long userId) {
+        log.info("Inside deleteUserByUserId of UserServiceImpl");
+        userRepository.deleteUserByUserId(userId);
+    }
 }
 

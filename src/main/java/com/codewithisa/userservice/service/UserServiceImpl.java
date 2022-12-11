@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -44,6 +45,15 @@ public class UserServiceImpl implements UserService{
     public void deleteUserByUserId(Long userId) {
         log.info("Inside deleteUserByUserId of UserServiceImpl");
         userRepository.deleteUserByUserId(userId);
+    }
+
+    @Override
+    public Users getUserByUsername(String username) {
+        Optional<Users> user = Optional.ofNullable(userRepository.getUserByUsername(username));
+        if(user.isPresent()){
+            return user.get();
+        }
+        return null;
     }
 }
 

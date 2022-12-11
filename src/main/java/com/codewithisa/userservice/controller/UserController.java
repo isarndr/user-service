@@ -57,5 +57,11 @@ public class UserController {
         userService.deleteUserByUserId(userId);
         return new ResponseEntity<>("user successfully deleted",HttpStatus.OK);
     }
+
+    @Operation(summary = "untuk menampilkan user berdasarkan username")
+    @GetMapping("username/{username}")
+    public ResponseEntity<Users> getUserByUsername(@Schema(example = "isarndr")@PathVariable("username") String username){
+        return new ResponseEntity<Users>(userService.getUserByUsername(username),HttpStatus.OK);
+    }
 }
 

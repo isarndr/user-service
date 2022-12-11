@@ -23,13 +23,13 @@ public class UserController {
     UserService userService;
 
 
-    @PostMapping("/")
+    @PostMapping("/add-user")
     public Users saveUser(@RequestBody Users user) {
         log.info("Inside saveUser of UserController");
         return userService.saveUser(user);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/get-user-by-user-id/{userId}")
     public ResponseEntity<Users> getUserByUserId(@PathVariable("userId") Long userId){
         log.info("Inside getUser of UserController");
         return new ResponseEntity<>(userService.getUserByUserId(userId),HttpStatus.OK);
@@ -38,7 +38,7 @@ public class UserController {
     @Operation(
             summary = "untuk mengubah user yang ada di database"
     )
-    @PutMapping("update-user/{userId}")
+    @PutMapping("update-user-by-user-id/{userId}")
     public ResponseEntity<Users> updateUser(@Schema(example = "1") @PathVariable("userId") Long userId,
                                                       @Valid @RequestBody SignupRequest signupRequest){
         log.info("Inside updateUser of UserController");
@@ -51,7 +51,7 @@ public class UserController {
     @Operation(
             summary = "untuk menghapus user dari database"
     )
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/delete-user-by-user-id/{userId}")
     public ResponseEntity<String> deleteUser(@Schema(example = "1")  @PathVariable("userId") Long userId){
         log.info("Inside deleteUser of UserController");
         userService.deleteUserByUserId(userId);
@@ -59,7 +59,7 @@ public class UserController {
     }
 
     @Operation(summary = "untuk menampilkan user berdasarkan username")
-    @GetMapping("username/{username}")
+    @GetMapping("get-user-by-username/{username}")
     public ResponseEntity<Users> getUserByUsername(@Schema(example = "isarndr")@PathVariable("username") String username){
         return new ResponseEntity<Users>(userService.getUserByUsername(username),HttpStatus.OK);
     }

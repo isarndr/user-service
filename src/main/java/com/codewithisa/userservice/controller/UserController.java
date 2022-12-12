@@ -2,6 +2,7 @@ package com.codewithisa.userservice.controller;
 
 import com.codewithisa.userservice.entity.Users;
 import com.codewithisa.userservice.entity.request.SignupRequest;
+import com.codewithisa.userservice.service.KafkaProducer;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,11 +23,15 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
     @PostMapping("/add-user")
     public Users saveUser(@RequestBody Users user) {
         log.info("Inside saveUser of UserController");
-        return userService.saveUser(user);
+        kafkaProducer.sendMessage(user);
+        log.info("Message sent to kafka topic");
+        return user;
     }
 
     @GetMapping("/get-user-by-user-id/{userId}")

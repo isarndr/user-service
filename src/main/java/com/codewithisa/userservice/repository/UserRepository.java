@@ -31,5 +31,8 @@ public interface UserRepository extends JpaRepository<Users, Long> {
             value = "select * from users where username=:username"
     )
     Users getUserByUsername(@Param("username") String username);
+
+    Boolean existsByUsername(String username);
+    Boolean existsByEmailAddress(String email);
 }
 

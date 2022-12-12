@@ -1,8 +1,12 @@
 package com.codewithisa.userservice.controller;
 
+import com.codewithisa.userservice.entity.Role;
 import com.codewithisa.userservice.entity.Users;
+import com.codewithisa.userservice.entity.enumeration.ERoles;
 import com.codewithisa.userservice.entity.request.SignupRequest;
+import com.codewithisa.userservice.entity.response.MessageResponse;
 import com.codewithisa.userservice.service.KafkaProducer;
+import com.codewithisa.userservice.service.RoleService;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,9 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -26,12 +33,47 @@ public class UserController {
     @Autowired
     private KafkaProducer kafkaProducer;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    RoleService roleService;
+
     @PostMapping("/add-user")
-    public Users saveUser(@RequestBody Users user) {
+    public ResponseEntity<Users> saveUser(@RequestBody SignupRequest signupRequest) {
         log.info("Inside saveUser of UserController");
+        Boolean usernameExist = userService.existsByUsername(signupRequest.getUsername());
+        if(Boolean.TRUE.equals(usernameExist)) {
+            log.error("Error: Username is already taken");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        Boolean emailExist = userService.existsByEmailAddress(signupRequest.getEmail());
+        if(Boolean.TRUE.equals(emailExist)) {
+            log.error("Error: Email is already taken");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Users user = new Users(signupRequest.getUsername(), signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()));
+
+        Set<String> strRoles = signupRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+
+        if(strRoles == null) {
+            Role role = roleService.findByName(ERoles.CUSTOMER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+            roles.add(role);
+        } else {
+            strRoles.forEach(role -> {
+                Role roles1 = roleService.findByName(ERoles.valueOf(role))
+                        .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
+                roles.add(roles1);
+            });
+        }
+        user.setRoles(roles);
         kafkaProducer.sendMessage(user);
         log.info("Message sent to kafka topic");
-        return user;
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/get-user-by-user-id/{userId}")
@@ -48,9 +90,32 @@ public class UserController {
                                                       @Valid @RequestBody SignupRequest signupRequest){
         log.info("Inside updateUser of UserController");
         Users users = new Users(signupRequest.getUsername(), signupRequest.getEmail(),
-                signupRequest.getPassword());
+                passwordEncoder.encode(signupRequest.getPassword()));
 
-        return new ResponseEntity<>(userService.updateUser(users, userId), HttpStatus.OK);
+        Set<String> strRoles = signupRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+
+        if(strRoles == null) {
+            Role role = roleService.findByName(ERoles.CUSTOMER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
+            roles.add(role);
+        } else {
+            strRoles.forEach(role -> {
+                Role roles1 = roleService.findByName(ERoles.valueOf(role))
+                        .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
+                roles.add(roles1);
+            });
+        }
+        users.setRoles(roles);
+
+        try{
+            log.info("user updated successfully");
+            return new ResponseEntity<>(userService.updateUser(users, userId), HttpStatus.OK);
+        }
+        catch (Exception e){
+            log.error("username or email already regestered, please input something else");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Operation(

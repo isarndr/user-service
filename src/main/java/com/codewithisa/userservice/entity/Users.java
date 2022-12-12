@@ -8,6 +8,8 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -38,6 +40,12 @@ public class Users {
 
     @Schema(example = "123")
     private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable( name = "userxrole",
+            joinColumns = @JoinColumn(name ="user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public Users(Long id, String email, String password) {
         this.userId = id;

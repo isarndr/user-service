@@ -49,11 +49,23 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Users getUserByUsername(String username) {
+        log.info("Inside getUserByUsername of UserServiceImpl");
         Optional<Users> user = Optional.ofNullable(userRepository.getUserByUsername(username));
         if(user.isPresent()){
             return user.get();
         }
         return null;
+    }
+
+    @Override
+    public Boolean existsByUsername(String username) {
+        log.info("Inside existsByUsername of UserServiceImpl");
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public Boolean existsByEmailAddress(String email) {
+        return userRepository.existsByEmailAddress(email);
     }
 }
 

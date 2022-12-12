@@ -5,7 +5,7 @@ import com.codewithisa.userservice.entity.Users;
 import com.codewithisa.userservice.entity.enumeration.ERoles;
 import com.codewithisa.userservice.entity.request.SignupRequest;
 import com.codewithisa.userservice.entity.response.MessageResponse;
-import com.codewithisa.userservice.service.KafkaProducer;
+//import com.codewithisa.userservice.service.KafkaProducer;
 import com.codewithisa.userservice.service.RoleService;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,11 +30,11 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @Autowired
-    private KafkaProducer kafkaProducer;
+//    @Autowired
+//    private KafkaProducer kafkaProducer;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
 
     @Autowired
     RoleService roleService;
@@ -54,7 +54,8 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         Users user = new Users(signupRequest.getUsername(), signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword()));
+//                passwordEncoder.encode(signupRequest.getPassword()));
+                signupRequest.getPassword());
 
         Set<String> strRoles = signupRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -71,8 +72,9 @@ public class UserController {
             });
         }
         user.setRoles(roles);
-        kafkaProducer.sendMessage(user);
-        log.info("Message sent to kafka topic");
+//        kafkaProducer.sendMessage(user);
+//        log.info("Message sent to kafka topic");
+        userService.saveUser(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
@@ -90,8 +92,8 @@ public class UserController {
                                                       @Valid @RequestBody SignupRequest signupRequest){
         log.info("Inside updateUser of UserController");
         Users users = new Users(signupRequest.getUsername(), signupRequest.getEmail(),
-                passwordEncoder.encode(signupRequest.getPassword()));
-
+//                passwordEncoder.encode(signupRequest.getPassword()));
+                signupRequest.getPassword());
         Set<String> strRoles = signupRequest.getRole();
         Set<Role> roles = new HashSet<>();
 

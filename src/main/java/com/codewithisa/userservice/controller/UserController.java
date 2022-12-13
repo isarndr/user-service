@@ -143,6 +143,11 @@ public class UserController {
     @DeleteMapping("/delete-user-by-user-id/{userId}")
     public ResponseEntity<String> deleteUser(@Schema(example = "1")  @PathVariable("userId") Long userId){
         log.info("Inside deleteUser of UserController");
+        Boolean userIdExist = userService.existsById(userId);
+        if(!userIdExist){
+            log.error("userId is not found");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         userService.deleteUserByUserId(userId);
         return new ResponseEntity<>("user successfully deleted",HttpStatus.OK);
     }

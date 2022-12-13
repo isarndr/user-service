@@ -81,6 +81,11 @@ public class UserController {
     @GetMapping("/get-user-by-user-id/{userId}")
     public ResponseEntity<Users> getUserByUserId(@PathVariable("userId") Long userId){
         log.info("Inside getUser of UserController");
+        Boolean userIdExist = userService.existsById(userId);
+        if(!userIdExist){
+            log.error("userId is not found");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(userService.getUserByUserId(userId),HttpStatus.OK);
     }
 

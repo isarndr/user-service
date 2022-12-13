@@ -91,6 +91,18 @@ public class UserController {
     public ResponseEntity<Users> updateUser(@Schema(example = "1") @PathVariable("userId") Long userId,
                                                       @Valid @RequestBody SignupRequest signupRequest){
         log.info("Inside updateUser of UserController");
+
+        Boolean userIdExist = userService.existsById(userId);
+        if(!userIdExist){
+            log.error("userId is not found");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        Boolean usernameExist=userService.existsByUsername(signupRequest.getUsername());
+        if(usernameExist){
+            log.error("username already exist");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
         Users users = new Users(signupRequest.getUsername(), signupRequest.getEmail(),
 //                passwordEncoder.encode(signupRequest.getPassword()));
                 signupRequest.getPassword());

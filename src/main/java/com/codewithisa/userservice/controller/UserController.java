@@ -145,6 +145,12 @@ public class UserController {
     @Operation(summary = "untuk menampilkan user berdasarkan username")
     @GetMapping("get-user-by-username/{username}")
     public ResponseEntity<Users> getUserByUsername(@Schema(example = "isarndr")@PathVariable("username") String username){
+        log.info("Inside getUserByUsername of UserController");
+        Boolean usernameExist = userService.existsByUsername(username);
+        if(!usernameExist){
+            log.error("username is not found");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<Users>(userService.getUserByUsername(username),HttpStatus.OK);
     }
 }

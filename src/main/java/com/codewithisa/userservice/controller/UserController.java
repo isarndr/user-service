@@ -6,6 +6,7 @@ import com.codewithisa.userservice.entity.enumeration.ERoles;
 import com.codewithisa.userservice.entity.request.SignupRequest;
 import com.codewithisa.userservice.entity.response.MessageResponse;
 //import com.codewithisa.userservice.service.KafkaProducer;
+import com.codewithisa.userservice.service.KafkaProducer;
 import com.codewithisa.userservice.service.RoleService;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,8 +31,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
-//    @Autowired
-//    private KafkaProducer kafkaProducer;
+    @Autowired
+    private KafkaProducer kafkaProducer;
 
 //    @Autowired
 //    PasswordEncoder passwordEncoder;
@@ -72,9 +73,9 @@ public class UserController {
             });
         }
         user.setRoles(roles);
-//        kafkaProducer.sendMessage(user);
-//        log.info("Message sent to kafka topic");
-        userService.saveUser(user);
+        kafkaProducer.sendMessage(user);
+        log.info("Message sent to kafka topic");
+//        userService.saveUser(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 

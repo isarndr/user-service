@@ -73,9 +73,9 @@ public class UserController {
             });
         }
         user.setRoles(roles);
-        kafkaProducer.sendMessage(user);
-        log.info("Message sent to kafka topic");
-//        userService.saveUser(user);
+//        kafkaProducer.sendMessage(user);
+//        log.info("Message sent to kafka topic");
+        userService.saveUser(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
     // delete this comment, just for redeploy

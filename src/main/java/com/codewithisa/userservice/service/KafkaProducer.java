@@ -21,15 +21,15 @@ public class KafkaProducer {
     @Autowired
     private KafkaTemplate<String, Users> kafkaTemplate;
 
-    public void sendMessage(Users user){
-        log.info("Inside sendMessage of KafkaProducer");
-        LOGGER.info(String.format("Message sent -> %s", user.toString()));
-
-        Message<Users> message = MessageBuilder
-                .withPayload(user)
-                .setHeader(KafkaHeaders.TOPIC, "add-user")
-                .build();
-
-        kafkaTemplate.send(message);
-    }
+//    public void sendMessage(Users user){
+//        log.info("Inside sendMessage of KafkaProducer");
+//        LOGGER.info(String.format("Message sent -> %s", user.toString()));
+//
+//        Message<Users> message = MessageBuilder
+//                .withPayload(user)
+//                .setHeader(KafkaHeaders.TOPIC, "add-user")
+//                .build();
+//
+//        kafkaTemplate.send(message);
+//    }
 }

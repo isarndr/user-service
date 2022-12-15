@@ -18,11 +18,11 @@ public class KafkaConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumer.class);
 
-    @KafkaListener(topics = "add-user",
-            groupId = "group-1")
-    public void consume(Users user){
-        log.info("Inside consume of KafkaConsumer");
-        LOGGER.info(String.format("Message received -> %s", user.toString()));
-        userService.saveUser(user);
-    }
+//    @KafkaListener(topics = "add-user",
+//            groupId = "group-1")
+//    public void consume(Users user){
+//        log.info("Inside consume of KafkaConsumer");
+//        LOGGER.info(String.format("Message received -> %s", user.toString()));
+////        userService.saveUser(user);
+//    }
 }

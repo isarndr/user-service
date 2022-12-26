@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -14,6 +15,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(
+        name = "Users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "emailAddress")
@@ -21,12 +23,13 @@ import java.util.Set;
 )
 @Builder
 @AllArgsConstructor
-public class Users {
+@NoArgsConstructor
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(example = "1")
-    private Long userId;
+//    @Schema(example = "1")
+    private Long id;
 
     @NotBlank
     @Size(max = 20)
@@ -34,7 +37,7 @@ public class Users {
     private String username;
 
     @NotBlank
-    @Size(max = 50)
+    @Size(max = 20)
     @Schema(example = "isa@yahoo.com")
     private String emailAddress;
 
@@ -47,22 +50,23 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public Users(Long id, String email, String password) {
-        this.userId = id;
+    public User(Long id, String email, String password) {
+        this.id = id;
         this.emailAddress = email;
         this.password = password;
     }
 
-    public Users(String username, String email, String password) {
+    public User(String username, String email, String password) {
         this.username = username;
         this.emailAddress = email;
         this.password = password;
     }
 
-    public Users() {
-
+    public User(String username, String email, String password, Set<Role> roles) {
+        this.username = username;
+        this.emailAddress = email;
+        this.password = password;
+        this.roles = roles;
     }
-
-
 }
 

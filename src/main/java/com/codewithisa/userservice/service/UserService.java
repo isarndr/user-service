@@ -1,25 +1,25 @@
 package com.codewithisa.userservice.service;
 
-import com.codewithisa.userservice.entity.Users;
+import com.codewithisa.userservice.entity.User;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public interface UserService {
-    Users saveUser(Users user);
+    User saveUser(User user) throws Exception;
 
-    Users getUserByUserId(Long userId);
+    User getUserById(Long id) throws Exception;
 
-    Users updateUser(Users users, Long userId);
+    User updateUser(User user, Long id);
 
-    void deleteUserByUserId(Long userId);
+    void deleteUserById(Long id) throws Exception;
 
-    Users getUserByUsername(String username);
+    User getUserByUsername(String username) throws Exception;
 
     Boolean existsByUsername(String username);
 
     Boolean existsByEmailAddress(String email);
 
-    Boolean existsById(Long userId);
+    Boolean existsById(Long id);
 }
 

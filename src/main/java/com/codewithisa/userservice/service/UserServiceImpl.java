@@ -53,7 +53,6 @@ public class UserServiceImpl implements UserService{
         existingUser.setEmailAddress(user.getEmailAddress());
         existingUser.setPassword(user.getPassword());
         existingUser.setId(id);
-        existingUser.setRoles(user.getRoles());
         userRepository.save(existingUser);
         log.info("user successfully updated");
         return existingUser;

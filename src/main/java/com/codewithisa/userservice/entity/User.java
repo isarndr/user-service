@@ -44,12 +44,6 @@ public class User {
     @Schema(example = "123")
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable( name = "userxrole",
-            joinColumns = @JoinColumn(name ="user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles = new HashSet<>();
-
     public User(Long id, String email, String password) {
         this.id = id;
         this.emailAddress = email;
@@ -60,13 +54,6 @@ public class User {
         this.username = username;
         this.emailAddress = email;
         this.password = password;
-    }
-
-    public User(String username, String email, String password, Set<Role> roles) {
-        this.username = username;
-        this.emailAddress = email;
-        this.password = password;
-        this.roles = roles;
     }
 }
 

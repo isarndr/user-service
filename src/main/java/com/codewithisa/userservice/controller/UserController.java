@@ -1,12 +1,9 @@
 package com.codewithisa.userservice.controller;
 
-import com.codewithisa.userservice.entity.Role;
 import com.codewithisa.userservice.entity.User;
-import com.codewithisa.userservice.entity.enumeration.ERoles;
 import com.codewithisa.userservice.entity.request.SignupRequest;
 //import com.codewithisa.userservice.service.KafkaProducer;
 //import com.codewithisa.userservice.service.KafkaProducer;
-import com.codewithisa.userservice.service.RoleService;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,34 +28,13 @@ public class UserController {
 //    @Autowired
 //    private KafkaProducer kafkaProducer;
 
-//    @Autowired
-//    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    RoleService roleService;
 
     @PostMapping("/")
     public ResponseEntity<?> saveUser(@RequestBody SignupRequest signupRequest) {
         try{
-            Set<String> strRoles = signupRequest.getRole();
-            Set<Role> roles = new HashSet<>();
-
-            if(strRoles == null) {
-                Role role = roleService.findByName(ERoles.CUSTOMER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-                roles.add(role);
-            }
-            else {
-                strRoles.forEach(role -> {
-                    Role roles1 = roleService.findByName(ERoles.valueOf(role))
-                            .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
-                    roles.add(roles1);
-                });
-            }
-
             User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
 //                passwordEncoder.encode(signupRequest.getPassword()));
-                    signupRequest.getPassword(), roles);
+                    signupRequest.getPassword());
 
 //        kafkaProducer.sendMessage(user);
 //        log.info("Message sent to kafka topic");
@@ -86,6 +61,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@Schema(example = "1") @PathVariable("id") Long id,
                                            @Valid @RequestBody SignupRequest signupRequest){
+
         Boolean idExist = userService.existsById(id);
 
         if(!idExist){
@@ -93,25 +69,8 @@ public class UserController {
             return new ResponseEntity<>("id is not found",HttpStatus.BAD_REQUEST);
         }
 
-        Set<String> strRoles = signupRequest.getRole();
-        Set<Role> roles = new HashSet<>();
-
-        if(strRoles == null) {
-            Role role = roleService.findByName(ERoles.CUSTOMER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found"));
-            roles.add(role);
-        }
-        else {
-            strRoles.forEach(role -> {
-                Role roles1 = roleService.findByName(ERoles.valueOf(role))
-                        .orElseThrow(() -> new RuntimeException("Error: Role " + role + " is not found"));
-                roles.add(roles1);
-            });
-        }
-
         User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
-//                passwordEncoder.encode(signupRequest.getPassword()));
-                signupRequest.getPassword(), roles);
+                signupRequest.getPassword());
 
         try{
             user = userService.updateUser(user, id);
@@ -135,8 +94,6 @@ public class UserController {
         catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
     @Operation(summary = "untuk menampilkan user berdasarkan username")

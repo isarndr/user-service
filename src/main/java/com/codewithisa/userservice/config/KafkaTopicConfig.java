@@ -9,21 +9,12 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaTopicConfig {
 
-    @Value("${spring.kafka.topic.name}")
-    private String topicName;
-
-    @Value("${spring.kafka.topic-json.name}")
-    private String topicJsonName;
+    @Value("${spring.kafka.topic-save-user.name}")
+    private String saveUser;
 
     @Bean
-    public NewTopic userTopic(){
-        return TopicBuilder.name(topicName)
-                .build();
-    }
-
-    @Bean
-    public NewTopic userJsonTopic(){
-        return TopicBuilder.name(topicJsonName)
+    public NewTopic saveUser(){
+        return TopicBuilder.name(saveUser)
                 .build();
     }
 }

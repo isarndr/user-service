@@ -4,7 +4,7 @@ import com.codewithisa.userservice.entity.User;
 import com.codewithisa.userservice.entity.request.SignupRequest;
 //import com.codewithisa.userservice.service.KafkaProducer;
 //import com.codewithisa.userservice.service.KafkaProducer;
-import com.codewithisa.userservice.kafka.UserJsonKafkaProducer;
+import com.codewithisa.userservice.kafka.JsonKafkaProducer;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +25,7 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    private UserJsonKafkaProducer userJsonKafkaProducer;
+    private JsonKafkaProducer userJsonKafkaProducer;
 
 
     @PostMapping("/")
@@ -45,9 +45,7 @@ public class UserController {
             return new ResponseEntity<>("Username already exist", HttpStatus.BAD_REQUEST);
         }
 
-        User user = new User(signupRequest.getUsername(), signupRequest.getEmail(), signupRequest.getPassword());
-
-        userJsonKafkaProducer.sendMessage(user);
+        userJsonKafkaProducer.sendMessage(signupRequest);
 
         return new ResponseEntity<>("User Json message sent to kafka topic", HttpStatus.OK);
     }

@@ -22,10 +22,13 @@ public class JsonKafkaConsumer {
     @Value("${spring.kafka.topic-send-user.name}")
     private String sendUserTopic;
 
+    @Value("${spring.kafka.topic-save-user.name}")
+    private String saveUserTopic;
+
     @KafkaListener(topics = "${spring.kafka.topic-save-user.name}", groupId = "${spring.kafka.consumer.group-id}")
     public void saveUser(SignupRequest signupRequest){
 
-        log.info("Json message recieved from topic {} -> {}", "${spring.kafka.topic-save-user.name}", signupRequest.toString());
+        log.info("Json message recieved from topic {} -> {}", saveUserTopic, signupRequest.toString());
 
         User user = new User(signupRequest.getUsername(), signupRequest.getEmail(), signupRequest.getPassword());
 

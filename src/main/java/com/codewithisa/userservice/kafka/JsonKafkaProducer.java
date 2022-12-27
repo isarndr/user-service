@@ -20,7 +20,7 @@ public class JsonKafkaProducer {
     @Autowired
     private KafkaTemplate<String, User> kafkaTemplateSendUser;
 
-    public void sendMessage(SignupRequest signupRequest, String topicName){
+    public void sendMessageSignupRequest(SignupRequest signupRequest, String topicName){
 
         Message<SignupRequest> message = MessageBuilder
                 .withPayload(signupRequest)

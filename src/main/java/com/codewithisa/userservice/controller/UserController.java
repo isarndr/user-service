@@ -55,7 +55,7 @@ public class UserController {
             return new ResponseEntity<>("Username already exist", HttpStatus.BAD_REQUEST);
         }
 
-        jsonKafkaProducer.sendMessage(signupRequest, saveUserTopic);
+        jsonKafkaProducer.sendMessageSignupRequest(signupRequest, saveUserTopic);
 
         return new ResponseEntity<>("User Json message sent to topic: "+ saveUserTopic, HttpStatus.OK);
     }

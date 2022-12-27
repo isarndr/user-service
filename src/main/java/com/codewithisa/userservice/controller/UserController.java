@@ -2,14 +2,13 @@ package com.codewithisa.userservice.controller;
 
 import com.codewithisa.userservice.entity.User;
 import com.codewithisa.userservice.entity.request.SignupRequest;
-//import com.codewithisa.userservice.service.KafkaProducer;
-//import com.codewithisa.userservice.service.KafkaProducer;
 import com.codewithisa.userservice.kafka.JsonKafkaProducer;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +24,19 @@ public class UserController {
     UserService userService;
 
     @Autowired
-    private JsonKafkaProducer userJsonKafkaProducer;
+    private JsonKafkaProducer jsonKafkaProducer;
 
+    @Value("${spring.kafka.topic-save-user.name}")
+    private String saveUserTopic;
+
+    @Value("${spring.kafka.topic-update-user.name}")
+    private String updateUserTopic;
+
+    @Value("${spring.kafka.topic-send-string.name}")
+    private String sendStringTopic;
+
+    @Value("${spring.kafka.topic-send-user.name}")
+    private String sendUserTopic;
 
     @PostMapping("/")
     public ResponseEntity<?> saveUser(@RequestBody SignupRequest signupRequest) {
@@ -45,9 +55,9 @@ public class UserController {
             return new ResponseEntity<>("Username already exist", HttpStatus.BAD_REQUEST);
         }
 
-        userJsonKafkaProducer.sendMessage(signupRequest);
+        jsonKafkaProducer.sendMessage(signupRequest, saveUserTopic);
 
-        return new ResponseEntity<>("User Json message sent to kafka topic", HttpStatus.OK);
+        return new ResponseEntity<>("User Json message sent to topic: "+ saveUserTopic, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -73,17 +83,11 @@ public class UserController {
             return new ResponseEntity<>("id is not found",HttpStatus.BAD_REQUEST);
         }
 
-        User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
-                signupRequest.getPassword());
+        User user = new User(id, signupRequest.getUsername(), signupRequest.getEmail(), signupRequest.getPassword());
 
-        try{
-            user = userService.updateUser(user, id);
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-        catch (Exception e){
-            log.error("username or email already regestered, please input something else");
-            return new ResponseEntity<>("username or email already regestered, please input something else",HttpStatus.BAD_REQUEST);
-        }
+        jsonKafkaProducer.sendMessageUser(user, sendUserTopic);
+
+        return new ResponseEntity<>("Json sent to: "+sendUserTopic, HttpStatus.OK);
     }
 
     @Operation(

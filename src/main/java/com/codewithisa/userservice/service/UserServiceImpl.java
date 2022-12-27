@@ -81,19 +81,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public Boolean existsByUsername(String username) {
-        log.info("User with username: {} is exist", username);
         return userRepository.existsByUsername(username);
     }
 
     @Override
     public Boolean existsByEmailAddress(String email) {
-        log.info("User with email address: {} is found", email);
         return userRepository.existsByEmailAddress(email);
     }
 
     @Override
     public Boolean existsById(Long id) {
-        log.info("User with id: {} is found", id);
         return userRepository.existsById(id);
     }
 }

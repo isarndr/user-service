@@ -4,6 +4,7 @@ import com.codewithisa.userservice.entity.User;
 import com.codewithisa.userservice.entity.request.SignupRequest;
 //import com.codewithisa.userservice.service.KafkaProducer;
 //import com.codewithisa.userservice.service.KafkaProducer;
+import com.codewithisa.userservice.kafka.UserJsonKafkaProducer;
 import com.codewithisa.userservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,25 +24,32 @@ public class UserController {
     @Autowired
     UserService userService;
 
-//    @Autowired
-//    private KafkaProducer kafkaProducer;
+    @Autowired
+    private UserJsonKafkaProducer userJsonKafkaProducer;
 
 
     @PostMapping("/")
     public ResponseEntity<?> saveUser(@RequestBody SignupRequest signupRequest) {
-        try{
-            User user = new User(signupRequest.getUsername(), signupRequest.getEmail(),
-//                passwordEncoder.encode(signupRequest.getPassword()));
-                    signupRequest.getPassword());
 
-//        kafkaProducer.sendMessage(user);
-//        log.info("Message sent to kafka topic");
-            userService.saveUser(user);
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        boolean emailAlreadyExist = userService.existsByEmailAddress(signupRequest.getEmail());
+
+        if(emailAlreadyExist){
+            log.error("Email already exist");
+            return new ResponseEntity<>("Email already exist", HttpStatus.BAD_REQUEST);
         }
-        catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+
+        boolean usernameAlreadyExist = userService.existsByUsername(signupRequest.getUsername());
+
+        if(usernameAlreadyExist){
+            log.error("Username already exist");
+            return new ResponseEntity<>("Username already exist", HttpStatus.BAD_REQUEST);
         }
+
+        User user = new User(signupRequest.getUsername(), signupRequest.getEmail(), signupRequest.getPassword());
+
+        userJsonKafkaProducer.sendMessage(user);
+
+        return new ResponseEntity<>("User Json message sent to kafka topic", HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
